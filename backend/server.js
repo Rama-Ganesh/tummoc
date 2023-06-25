@@ -4,9 +4,10 @@ const passport = require("passport");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const multer = require("multer");
 const cookieSession = require("cookie-session");
-const passportSetup = require("./passport");
+require("./passport");
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user.route");
 const cityRoute = require("./routes/city.route");
@@ -62,9 +63,11 @@ app.post("/api/upload", (req, res) => {
     return res.status(200).send("Successfully uploaded");
   });
 });
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(cookieParser());
 app.use("/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/cities", cityRoute);

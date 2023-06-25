@@ -6,24 +6,34 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Container from "@mui/material/Container";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import axios from "axios";
 import { Formik } from "formik";
 import React from "react";
-import * as Yup from "yup";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "../redux/userSlice";
 import { Link, useNavigate } from "react-router-dom";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import * as Yup from "yup";
+import { setUser } from "../redux/userSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const defaultTheme = createTheme();
+  const { user } = useSelector((state) => state.user);
 
-  const google = () => {
+  const google = (e) => {
+    e.preventDefault();
     window.open("http://localhost:8000/auth/google", "_self");
   };
+
+  React.useEffect(() => {
+    if (user !== null) {
+      navigate("/");
+    }
+  });
+
+  console.log(user);
 
   return (
     <Formik
@@ -35,16 +45,30 @@ const Login = () => {
         username: Yup.string().required("Email address is required"),
         password: Yup.string().required("password is required"),
       })}
-      onSubmit={(values) => {
-        axios
-          .post("http://localhost:8000/api/users/login", values, {
-            headers: {
-              "Content-type": "application/json",
+      onSubmit={async (values) => {
+        await axios
+          .post(
+            "http://localhost:8000/api/users/login",
+            values,
+            {
+              withCredentials: true,
             },
-          })
+            {
+              headers: {
+                "Content-type": "application/json",
+              },
+            }
+          )
           .then((res) => {
             console.log(res);
-            dispatch(setUser(res.data));
+            dispatch(
+              setUser({
+                username: res.data.username,
+                img: {
+                  value: res.data.img ? res.data.img : "",
+                },
+              })
+            );
             navigate("/");
           })
           .catch((err) => console.log(err));

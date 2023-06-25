@@ -11,17 +11,16 @@ export const userSlice = createSlice({
     setUser: (state, action) => {
       state.user = {
         username: action.payload?.username,
-        email: action.payload?.email,
-        country: action.payload?.country,
+        img: action.payload?.img,
       };
     },
-    deleteUser: (state) => {
+    logoutUser: (state) => {
       state.user = null;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setUser, deleteUser } = userSlice.actions;
+export const { setUser, logoutUser } = userSlice.actions;
 
 export default userSlice.reducer;

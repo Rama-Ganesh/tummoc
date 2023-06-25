@@ -11,13 +11,10 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import axios from "axios";
 import { Formik } from "formik";
 import React from "react";
-import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { setUser } from "../redux/userSlice";
 
 const Register = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const defaultTheme = createTheme();
 

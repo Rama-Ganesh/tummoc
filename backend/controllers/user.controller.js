@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const City = require("../models/city.model");
 
 const register = async (req, res) => {
@@ -37,15 +38,33 @@ const login = async (req, res) => {
     const isCorrect = bcrypt.compareSync(req.body.password, user.password);
     if (!isCorrect) return res.status(400).send("Wrong password or username.");
 
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWT_SECRET
+    );
+
     const { password, ...info } = user._doc;
-    res.status(200).send(info);
+    res
+      .cookie("accessToken", token, {
+        httpOnly: true,
+      })
+      .status(200)
+      .send(info);
   } catch (error) {
     res.status(500).send(error);
   }
 };
 
 const logout = async (req, res) => {
-  res.send("It works");
+  res
+    .clearCookie("accessToken", {
+      sameSite: "none",
+      secure: true,
+    })
+    .status(200)
+    .send("User has been logged out.");
 };
 
 module.exports = { login, register, logout };
