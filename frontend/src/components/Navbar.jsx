@@ -6,13 +6,20 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../redux/userSlice";
 
 function Navbar() {
-  const [user, setUser] = React.useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const data = useSelector((state) => state.user.user)
+  const { user } = useSelector((state) => state.user);
+
+  React.useEffect(() => {
+    if (user === null) {
+      navigate("/login");
+    }
+  });
 
   React.useEffect(() => {
     const getUser = () => {
@@ -30,7 +37,12 @@ function Navbar() {
           throw new Error("authentication has been failed!");
         })
         .then((resObject) => {
-          setUser(resObject.user);
+          dispatch(
+            setUser({
+              username: resObject.user.displayName,
+            })
+          );
+          console.log(resObject.user, "user");
         })
         .catch((err) => {
           console.log(err);
@@ -55,7 +67,8 @@ function Navbar() {
             </Button>
           ) : (
             <Box gap="12px" display="flex" alignItems="center">
-              <Avatar src={user?.photos[0].value} />
+              <Avatar />
+              {/* src={user?.photos[0].value} */}
               <Typography variant="h6">{user.displayName}</Typography>
               <Button color="inherit" onClick={logout}>
                 Logout
@@ -64,7 +77,6 @@ function Navbar() {
           )}
         </Toolbar>
       </AppBar>
-      
     </Box>
   );
 }
