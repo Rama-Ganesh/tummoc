@@ -6,10 +6,13 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "@mui/material";
+import { useSelector } from "react-redux";
 
 function Navbar() {
   const [user, setUser] = React.useState(null);
   const navigate = useNavigate();
+
+  const data = useSelector((state) => state.user.user)
 
   React.useEffect(() => {
     const getUser = () => {
@@ -36,7 +39,6 @@ function Navbar() {
     getUser();
   }, []);
 
-  console.log(user, "user");
   const logout = () => {
     window.open("http://localhost:8000/auth/logout", "_self");
   };
@@ -62,6 +64,7 @@ function Navbar() {
           )}
         </Toolbar>
       </AppBar>
+      
     </Box>
   );
 }
