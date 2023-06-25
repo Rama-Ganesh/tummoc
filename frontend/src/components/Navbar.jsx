@@ -1,18 +1,41 @@
-import * as React from "react";
+import { Avatar } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import axios from "axios";
+import * as React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Avatar } from "@mui/material";
-import { useSelector } from "react-redux";
+import { logoutUser, setUser } from "../redux/userSlice";
 
 function Navbar() {
-  const [user, setUser] = React.useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const data = useSelector((state) => state.user.user)
+  const { user } = useSelector((state) => state.user);
+
+  const handleLogout = async () => {
+    window.open("http://localhost:8000/auth/logout", "_self");
+    await axios
+      .post("http://localhost:8000/api/users/logout", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        console.log(res, "res");
+        dispatch(logoutUser());
+      })
+      .catch((err) => console.log(err));
+  };
+
+  console.log(user, "user");
+
+  React.useEffect(() => {
+    if (user === null) {
+      navigate("/login");
+    }
+  });
 
   React.useEffect(() => {
     const getUser = () => {
@@ -30,18 +53,21 @@ function Navbar() {
           throw new Error("authentication has been failed!");
         })
         .then((resObject) => {
-          setUser(resObject.user);
+          dispatch(
+            setUser({
+              username: resObject.user.displayName,
+              img: resObject.user.photos[0],
+            })
+          );
+          console.log(resObject.user, "user");
         })
         .catch((err) => {
           console.log(err);
         });
     };
     getUser();
-  }, []);
+  }, [dispatch]);
 
-  const logout = () => {
-    window.open("http://localhost:8000/auth/logout", "_self");
-  };
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -55,16 +81,35 @@ function Navbar() {
             </Button>
           ) : (
             <Box gap="12px" display="flex" alignItems="center">
-              <Avatar src={user?.photos[0].value} />
-              <Typography variant="h6">{user.displayName}</Typography>
-              <Button color="inherit" onClick={logout}>
+              <Avatar src={user?.img?.value} />
+              <Button color="inherit" onClick={handleLogout}>
                 Logout
               </Button>
             </Box>
           )}
         </Toolbar>
       </AppBar>
-      
+
+      <Box
+        margin="auto"
+        alignItems="center"
+        marginTop="50px"
+        maxWidth="sm"
+        display="flex"
+        flexDirection="column"
+        columnGap="12px"
+      >
+        <Avatar
+          src={user?.img?.value}
+          sx={{
+            height: "150px",
+            width: "150px",
+          }}
+        />
+        <Typography variant="h3" sx={{ mt: "50px" }}>
+          {user?.username}
+        </Typography>
+      </Box>
     </Box>
   );
 }

@@ -21,19 +21,11 @@ const userSchema = new Schema(
       type: String,
       required: false,
     },
-    country: {
-      type: String,
-      required: false,
-    },
     city: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "city",
     },
     phone: {
-      type: String,
-      required: false,
-    },
-    desc: {
       type: String,
       required: false,
     },
