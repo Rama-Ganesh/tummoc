@@ -8,6 +8,7 @@ const cookieSession = require("cookie-session");
 const passportSetup = require("./passport");
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user.route");
+const cityRoute = require("./routes/city.route");
 
 const app = express();
 dotenv.config();
@@ -36,6 +37,7 @@ app.use(bodyParser.json())
 app.use(express.json());
 app.use("/auth", authRoute);
 app.use("/api/users", userRoute);
+app.use("/api/cities", cityRoute);
 
 const connect = () => {
   try {
